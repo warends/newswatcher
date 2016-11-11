@@ -63,7 +63,7 @@ MongoClient.connect(config.MONGODB_CONNECT_URL, function(err, dbConn){
   console.log('connected to mongodb');
 });
 
-app.use(function(req, res){
+app.use(function(req, res, next){
   req.db = db;
   req.node2 = node2;
   next();
@@ -85,17 +85,18 @@ app.use(function(req, res, next){
   next(err);
 });
 
-//dev error handler that wil add in stacktrace
-if(app.get('env') === 'development'){
-  app.use(function(err, req, res, next){
-    res.status(err.status || 500).json({message: err.toString(), error:err});
-    console.log(err);
-  });
+// development error handler that will add in a stacktrace
+if (app.get('env') === 'development') {
+    app.use(function(err, req, res, next) {
+        res.status(err.status || 500).json({ message: err.toString(), error: err });
+        console.log(err);
+    });
 }
-//production error handler with no stactrace exposure
-app.use(function(err, req, res, next){
-  res.status(err.status || 500).json({message: err.toString(), error: {}});
-  console.log(err);
+
+// production error handler with no stacktraces exposed to users
+app.use(function(err, req, res, next) {
+    res.status(err.status || 500).json({ message: err.toString(), error: {} });
+    console.log(err);
 });
 
 app.set('port', process.env.PORT || 3000);

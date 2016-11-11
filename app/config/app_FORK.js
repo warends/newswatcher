@@ -8,6 +8,11 @@ var config = require('./config'),
     ObjectId = require('mongodb').ObjectID,
     MongoClient = require('mongodb').MongoClient;
 
+var globalNewsDoc,
+    newsPullBackgroundTimer,
+    staleStoryDeleteBackgroundTimer;
+
+
 var db = {};
 MongoClient.connect(config.MONGODB_CONNECT_URL, function(err, dbConn){
   assert.equal(null, err);
@@ -15,6 +20,8 @@ MongoClient.connect(config.MONGODB_CONNECT_URL, function(err, dbConn){
   db.collection = dbConn.collection('newswatcher');
   console.log('connected to mongodb');
 });
+
+console.log('FORK_RUNNING');
 
 process.on('message', function(m){
   if(m.msg){
@@ -121,7 +128,7 @@ function refreshStories(doc, callback) {
 // Refresh all of the news stories in the master list every 15 minutes
 //
 var count = 0;
-var newsPullBackgroundTimer = setInterval(function () {
+newsPullBackgroundTimer = setInterval(function () {
     // The New York Times news service states that we should not call more than five times a second
     // We have to call it over and over again, because there are multiple news categoris, so space each out by half a second
     // It will error if the size of this Document exceeds the maximum size (512KB). To fix this, split it up into as many as necessary.
@@ -269,7 +276,7 @@ function refreshAllUserStories() {
 // Delete shared news stories that are over three days old.
 // Use node-schedule or cron npm modules if want to actually do something like run every morning at 1AM
 //
-var staleStoryDeleteBackgroundTimer = setInterval(function () {
+staleStoryDeleteBackgroundTimer = setInterval(function () {
     db.collection.find({ type: 'SHAREDSTORY_TYPE' }).toArray(function (err, docs) {
         if (err) {
             console.log('Fork could not get shared stories. err:', err);

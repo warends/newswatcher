@@ -12,9 +12,9 @@ var router = express.Router();
 
 router.post('/', function postUser(req, res, next){
   var schema = {
-    displayName: joi.string().alpanum().min(3).max(50).required(),
-    email: joi.string().email().min(7).max(50).required(),
-    password: joi.string().regex(/^(?=.*[0-9]) (?=.*[!@#$%^&*]) [a-zA-Z0-0!@#$%^&*]{7,15}$/).required()
+      displayName: joi.string().alphanum().min(3).max(50).required(),
+      email: joi.string().email().min(7).max(50).required(),
+      password: joi.string().regex(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{7,15}$/).required()
   };
 
   joi.validate(req.body, schema, function(err, value){
@@ -54,7 +54,7 @@ router.post('/', function postUser(req, res, next){
           savedStories: []
         };
 
-        bycrypt.hash(req.body.password, 10, function getHash(err, hash){
+        bcrypt.hash(req.body.password, 10, function getHash(err, hash){
           if(err)
             return next(err);
 
@@ -63,7 +63,7 @@ router.post('/', function postUser(req, res, next){
             if(err)
               return next(err);
             req.node2.send({
-              msg: 'Refresh Stories',
+              msg: 'REFRESH_STORIES',
               doc: result.ops[0]
             });
             res.status(201).json(result.ops[0]);
