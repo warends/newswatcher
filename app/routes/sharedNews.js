@@ -85,10 +85,10 @@ router.delete('/:sid', authHelper.checkAuth, function(req, res, next){
     type: 'SHAREDSTORY_TYPE',
     _id: req.params.said
   }, function(err, result){
-    if(err)
+    if(err) {
       console.log('CONNECTION ERROR err: ' + err);
       return next(err);
-    else if(result.ok != 1){
+    } else if(result.ok != 1){
       console.log('CONNECTION ERROR result: ' + result);
       return next(new Error('Share sotry deletion failed'));
     }
@@ -108,7 +108,7 @@ router.post('/:sid/Comments', authHelper.checkAuth, function(req, res, next){
       if(err)
         return next(err);
 
-      var xferComment + }{
+      var xferComment = {
         displayName: req.auth.displayName,
         userId: req.auth.userId,
         dateTime: Date.now(),

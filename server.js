@@ -6,7 +6,7 @@ var express = require('express'),
     cp = require('child_process'),
     responseTime = require('response-time'),
     helmet = require('helmet'),
-    MongoClient = require('mongodb').MongoClient;
+    MongoClient = require('mongodb').MongoClient,
     RateLimit = require('express-rate-limit');
 
 var config = require('./app/config/config'),
@@ -53,7 +53,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 //simplify the serving of static content
 app.use(express.static(path.join(__dirname, 'static')));
 
-//var node2 = cp.fork('./app_FORK.js');
+var node2 = cp.fork('./app/config/app_FORK.js');
 
 var db = {};
 MongoClient.connect(config.MONGODB_CONNECT_URL, function(err, dbConn){

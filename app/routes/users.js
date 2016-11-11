@@ -22,7 +22,7 @@ router.post('/', function postUser(req, res, next){
       return next(new Error('Invalid field: display name 3 to 50 characters, valid email 7 to 15 (1 number, 1 special character)'));
 
       req.db.collection.findOne({
-        type: :'USER_TYPE',
+        type: 'USER_TYPE',
         email: req.body.email,
       }, function(err, doc) {
         if(err)
@@ -104,7 +104,7 @@ router.get('/:id', authHelper.checkAuth, function(req, res, next){
     return next(new Error('Invalid request for account fetch'));
 
   req.db.collection.findOne({
-    type: 'USER_TYPE'
+    type: 'USER_TYPE',
     _id: ObjectID(req.auth.userId)
   }, function(err, doc){
     if(err)
@@ -146,7 +146,7 @@ router.put(':/id', authHelper.checkAuth, function(req, res, next){
   }
   //validate the news filters
   var schema = {
-    name: joi.string().min(1).max(30).regex(/^[-_a-zA-Z0-9]+$/).required();
+    name: joi.string().min(1).max(30).regex(/^[-_a-zA-Z0-9]+$/).required(),
     keyWords: joi.array().max(10).items(joi.string().max(20)).required(),
     enableAlert: joi.boolean,
     alertFrequency: joi.number().min(0),
@@ -239,7 +239,7 @@ router.delete('/:id/savedstories/:sid', authHelper.checkAuth, function(req, res,
 
   req.db.collection.findOneAndUpdate({
     type: 'USER_TYPE',
-    _id: _id: ObjectID(req.auth.userId)
+    _id: ObjectID(req.auth.userId)
   }, {
     $pull: {savedStories:{ storyID: req.params.sid}}},
     {returnOrignal:true},
@@ -255,24 +255,6 @@ router.delete('/:id/savedstories/:sid', authHelper.checkAuth, function(req, res,
       res.satus(200).json(result.value);
   });
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 module.exports = router;
