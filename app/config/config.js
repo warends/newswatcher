@@ -1,7 +1,7 @@
 var config = {};
 
 config.JWT_SECRET = "<aintnosecret>";
-config.NEWYORKTIMES_API_KEY = "<aintnosecret>";
+config.NEWYORKTIMES_API_KEY = "f07797f819504502b1f7c4843b6cfaa5";
 config.NEWYORKTIMESCATEGORIES = ["world", "national", "business"];
 config.GLOBAL_STORIES_ID = "MASTER_STORIES_DO_NOT_DELETE";
 config.MAX_SHARED_STORIES = 30;

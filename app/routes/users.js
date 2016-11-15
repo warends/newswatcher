@@ -6,7 +6,7 @@ var express = require('express'),
     joi = require('joi'),  //data validation
     authHelper = require('./authHelper'),
     config = require('../config/config'),
-    ObjectId = require('mongodb').ObjectID;
+    ObjectID = require('mongodb').ObjectID;
 
 var router = express.Router();
 
@@ -28,7 +28,7 @@ router.post('/', function postUser(req, res, next){
         if(err)
           return next(err);
         if(doc)
-          return next(new Error('Email accounr already registered'));
+          return next(new Error('Email account already registered'));
 
         var xferUser = {
           type: 'USER_TYPE',
@@ -77,7 +77,7 @@ router.post('/', function postUser(req, res, next){
 router.delete('/:id', authHelper.checkAuth, function(req, res, next){
   //verify that the passed in id to delete is the same as the auth token
   if(req.params.id != req.auth.userId)
-    return next(new Error('Invalid requesr for account deletion'));
+    return next(new Error('Invalid request for account deletion'));
 
   //mongo should do the work of queing this up and retrying if there is a conflict
   req.db.collection.findOneAndDelete({

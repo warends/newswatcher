@@ -15,20 +15,20 @@ var router = express.Router();
 router.post('/', function postSession(req, res, next){
   //password must be 7 to 15 char and contain on special char and one number
   var schema = {
-    email: joi.string().email().min(7).max(50).required(),
-    password: joi.string().regex(/^(?=.*[0-9]) (?=.*[!@#$%^&*]) [a-zA-Z0-0!@#$%^&*]{7,15}$/).required()
+      email: joi.string().email().min(7).max(50).required(),
+      password: joi.string().regex(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{7,15}$/).required()
   };
 
   joi.validate(req.body, schema, function(err, value){
     if(err)
-      return next(new Error('invalid field: password 7 to 15 (one number, one special character)'));
+      return next(new Error('Invalid field: password 7 to 15 (one number, one special character)'));
 
       req.db.collection.findOne({
         type: 'USER_TYPE',
         email: req.body.email
       }, function(err, user){
-        if (err) return next(err);
-        if(!user) return next(new Error('User was not found. '));
+        if(err) return next(err);
+        if(!user) return next(new Error('User was not found.'));
 
         bcrypt.compare(req.body.password, user.passwordHash, function comparePassword(err, match){
           if(match){
@@ -38,8 +38,8 @@ router.post('/', function postSession(req, res, next){
                 sessionIP: req.ip,
                 sessionUA: req.headers['user-agent'],
                 userId: user._id.toHexString(),
-                displayName: user.displayName },
-                config.JWT_SECRET );
+                displayName: user.displayName
+              }, config.JWT_SECRET );
               res.status(201).json({
                 displayName : user.displayName,
                 userId: user._id.toHexString(),
@@ -48,7 +48,7 @@ router.post('/', function postSession(req, res, next){
               });
             } catch(err) { return next(err); }
           } else {
-            return next(new Error ('Wrong Password'));
+            return next(new Error ('Wrong password'));
           }
         });
       });
