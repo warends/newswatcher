@@ -4,7 +4,7 @@ var express = require('express'),
     joi = require('joi'),  //data validation
     authHelper = require('./authHelper'),
     config = require('../config/config'),
-    ObjectId = require('mongodb').ObjectID;
+    ObjectID = require('mongodb').ObjectID;
 
 var router = express.Router();
 

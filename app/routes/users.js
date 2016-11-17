@@ -105,7 +105,7 @@ router.get('/:id', authHelper.checkAuth, function(req, res, next){
 
   req.db.collection.findOne({
     type: 'USER_TYPE',
-    _id: ObjectID(req.auth.userId)
+     _id: ObjectID(req.auth.userId)
   }, function(err, doc){
     if(err)
       return next(err);
@@ -115,7 +115,7 @@ router.get('/:id', authHelper.checkAuth, function(req, res, next){
       displayName: doc.displayName,
       date: doc.date,
       settings: doc.settings,
-      newsFilters: foc.newsFilters,
+      newsFilters: doc.newsFilters,
       savedStories: doc.savedStories
     };
 
@@ -126,37 +126,37 @@ router.get('/:id', authHelper.checkAuth, function(req, res, next){
   });
 });
 
-router.put(':/id', authHelper.checkAuth, function(req, res, next){
+router.put('/:id', authHelper.checkAuth, function(req, res, next){
   //verify the pased in if is same as auth token
   if(req.params.id != req.auth.userId)
-    return next(new Error('Invalid request for account fetch'));
+    return next(new Error('Invalid request for account PUT'));
 
   //limit the number of newsFilters
   if(req.body.newsFilters.length > config.MAX_FILTERS)
     return next(new Error('Too many news filters'));
 
-  //clear out leading and trailing spaces
-  for (var i = 0; i < req.body.newsFilters.length; i++){
-    if('keyWords' in req.body.newsFilters[i] && req.body.newsFilters[i].keyWords[0] != "")
-      {
-        for (var j = 0; j < re.body.newsFilters[i].keyWords.length; j++){
-          req.body.newsFilters[i].keyWords[j] = req.body.newsFilters[i].keyWords[j].trim();
-        }
+  // clear out leading and trailing spaces
+  for (var i = 0; i < req.body.newsFilters.length; i++) {
+      if ("keyWords" in req.body.newsFilters[i] && req.body.newsFilters[i].keyWords[0] != "") {
+          for (var j = 0; j < req.body.newsFilters[i].keyWords.length; j++) {
+              req.body.newsFilters[i].keyWords[j] = req.body.newsFilters[i].keyWords[j].trim();
+          }
       }
   }
+
   //validate the news filters
   var schema = {
-    name: joi.string().min(1).max(30).regex(/^[-_a-zA-Z0-9]+$/).required(),
+    name: joi.string().min(1).max(30).regex(/^[-_ a-zA-Z0-9]+$/).required(),
     keyWords: joi.array().max(10).items(joi.string().max(20)).required(),
-    enableAlert: joi.boolean,
+    enableAlert: joi.boolean(),
     alertFrequency: joi.number().min(0),
-    enableAutoDelete: joi.boolean,
+    enableAutoDelete: joi.boolean(),
     deleteTime: joi.date(),
     newsStories: joi.array(),
     keywordsStr: joi.string().min(1).max(100)
   };
 
-  aysnc.eachSeries(req.body.newsFilters, function(filter, innercallback){
+  async.eachSeries(req.body.newsFilters, function(filter, innercallback){
     joi.validate(filter, schema, function(err, value){
       innercallback(err);
     });
@@ -165,9 +165,15 @@ router.put(':/id', authHelper.checkAuth, function(req, res, next){
       return next(err);
     } else {
       //we need the {returnOrignal:false}, so a test could verify what happened. otherwise the default is to return the original.
-      req.db.collection.findOneAndUpdate({ type: 'USER_TYPE', _id: ObjectID(req.auth.userId)},
-      { $set: { settings: { requireWIFI: req.body.requireWIFI, enableAlerts: req.body.enableAlerts }, newsFilters: req.body.newsFilters } },
-      { returnOriginal: false },
+      req.db.collection.findOneAndUpdate({
+        type: 'USER_TYPE',
+        _id: ObjectID(req.auth.userId)
+      }, { $set: {
+        settings: {
+          requireWIFI: req.body.requireWIFI,
+          enableAlerts: req.body.enableAlerts
+        }, newsFilters: req.body.newsFilters }
+      }, { returnOriginal: false },
 
       function(err, result){
         if(err) {
@@ -198,7 +204,7 @@ router.post('/:id/savedstories', authHelper.checkAuth, function(req, res, next){
     date: joi.date().required(),
     hours: joi.string().max(20),
     imageUrl: joi.string().max(300).required(),
-    keep: joi.boolean.required(),
+    keep: joi.boolean().required(),
     link: joi.string().max(300).required(),
     source: joi.string().max(50).required(),
     storyID: joi.string().max(100).required(),
@@ -207,7 +213,7 @@ router.post('/:id/savedstories', authHelper.checkAuth, function(req, res, next){
 
   joi.validate(req.body, schema, function(err, value){
     if(err)
-      return next(errr)
+      return next(err)
 
     //uses the mongodb operators to test the savedstories array for make sure its not already there, limit the number of saved stories
     req.db.collection.findOneAndUpdate({

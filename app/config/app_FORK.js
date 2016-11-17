@@ -62,6 +62,7 @@ function refreshStories(doc, callback) {
         doc.newsFilters[filterIdx].newsStories = [];
 
         for (var i = 0; i < globalNewsDoc.newsStories.length; i++) {
+            console.log('GLOBAL NEWS DOC: ' + globalNewsDoc);
             globalNewsDoc.newsStories[i].keep = false;
         }
 

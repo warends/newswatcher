@@ -20,6 +20,6 @@ module.exports.checkAuth = function(req, res, next){
       return next(err);
     }
   } else {
-    return next(new Error('User in not logged in'));
+    return next(new Error('User is not logged in - AuthHelper'));
   }
 };
